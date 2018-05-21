@@ -8,18 +8,18 @@ const swearWords = ["fuck", "shit", "זונה", "חרא"];
 
 bot.on("ready", async () => {
   console.log(`Bot is Online!`);
-bot.user.setActivity(`${bot.guilds.size} servers | @help`, {type: "WATCHING"});
+bot.user.setActivity(`${bot.guilds.size} servers | /tlv help`, {type: "WATCHING"});
 });
 
 // Updates the bot's status if he joins a server
 bot.on("guildCreate", guild => {
-bot.user.setActivity(`${bot.guilds.size} servers | @help`, {type: "WATCHING"});
+bot.user.setActivity(`${bot.guilds.size} servers | /tlv help`, {type: "WATCHING"});
 });
 
 /// Updates the bot's status if he leaves a servers
 bot.on("guildDelete", guild => {
 bot.user.setActivity(
-        `${bot.guilds.size} servers | @help`, {type: "WATCHING"});
+        `${bot.guilds.size} servers | /tlv help`, {type: "WATCHING"});
 });
 
 //welcome join
@@ -49,7 +49,7 @@ bot.on("message", async message => {
 
     //!kick @user break the rules
     let kUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-    if(!kUser) return message.channel.send("@kick [user] [reason]");
+    if(!kUser) return message.channel.send("/tlv kick [user] [reason]");
     let kReason = args.join(" ").slice(22);
     if(!message.member.hasPermission("MANAGE_MESSAGES")) return message.channel.send("No can do pal!");
     if(kUser.hasPermission("MANAGE_MESSAGES")) return message.channel.send("That person can't be kicked!");
@@ -79,7 +79,7 @@ if( swearWords.some(word => message.content.includes(word)) ) {
   if(cmd === `${prefix}ban`){
 
     let bUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-    if(!bUser) return message.channel.send("@ban [user] [reason]");
+    if(!bUser) return message.channel.send("/tlv ban [user] [reason]");
     let bReason = args.join(" ").slice(22);
     if(!message.member.hasPermission("MANAGE_MEMBERS")) return message.channel.send("No can do pal!");
     if(bUser.hasPermission("MANAGE_MESSAGES")) return message.channel.send("That person can't be kicked!");
@@ -104,7 +104,7 @@ if( swearWords.some(word => message.content.includes(word)) ) {
 
     //!report @user this is the reason
     let rUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-    if(!rUser) return message.channel.send("@report [user] [reason]");
+    if(!rUser) return message.channel.send("/tlv report [user] [reason]");
     let rreason = args.join(" ").slice(22);
 
     let reportEmbed = new Discord.RichEmbed()
@@ -127,7 +127,7 @@ if( swearWords.some(word => message.content.includes(word)) ) {
 
     //!warn @user this is the reason
     let rUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-    if(!rUser) return message.channel.send("@warn [user] [reason]");
+    if(!rUser) return message.channel.send("/tlv warn [user] [reason]");
     let rreason = args.join(" ").slice(22);
 
     let reportEmbed = new Discord.RichEmbed()
@@ -153,7 +153,7 @@ if( swearWords.some(word => message.content.includes(word)) ) {
   let question = args.slice(0).join(" ");
 
   if (args.length === 0)
-  return message.reply('Invalid Format: @poll <Question>')
+  return message.reply('Invalid Format: /tlv poll <Question>')
 
   const embed = new Discord.RichEmbed()
   .setTitle("A Poll Has Been Started!")
@@ -186,9 +186,8 @@ if( swearWords.some(word => message.content.includes(word)) ) {
     .setDescription("Help Commands")
     .setColor("#268ccf")
     .setThumbnail(bicon)
-    .addField("Moderation Commands","@kick (user) (reason) - Kick a User.\n@ban (user) (reason) - Ban a User.\n@report (user) (reason) - report about User.\n@mute (user) (reason) - Mute a User.\n@warn (user) (reason) - Warn a User.")
-    .addField("Server Commands","@serverinfo - Server Informations.n\@poll (question) - Poll about Question\n@ping - Ping Pong");
-
+    .addField("Moderation Commands","/tlv kick (user) (reason) - Kick a User.\n/tlv ban (user) (reason) - Ban a User.\n/tlv report (user) (reason) - report about User.\n/tlv mute (user) (reason) - Mute a User.\n/tlv warn (user) (reason) - Warn a User.")
+    .addField("Server Commands","/tlv serverinfo - Server Informations.n\/tlv poll (question) - Poll about Question\n/tlv ping - Ping Pong");
     return message.author.send(botembed);
   }
   if(cmd === `${prefix}mute`){
@@ -260,13 +259,13 @@ if(message.content.startsWith(prefix + "avatar ")) { //IF for the command.
  }});
 
 bot.on('message', msg => {
-  if (msg.content === '@ping') {
+  if (msg.content === '/tlv ping') {
     msg.reply(`Pong! The ping is **${(bot.ping).toFixed(0)}**ms!  :ping_pong:`)
   }
 });
 
 bot.on('message', msg => {
-  if (msg.content === '@help') {
+  if (msg.content === '/tlv help') {
     msg.reply(`Check your Direct Messages!`)
   }
 });
