@@ -24,7 +24,7 @@ bot.user.setActivity(
 
 //welcome join
 bot.on('guildMemberAdd', member => {
-  const channel = member.guild.channels.find('name', 'צאט_חופשי');
+  const channel = member.guild.channels.find('name', 'suchpro‼');
   if (!channel) return;
   channel.send(`Welcome to the server, ${member}`);
 });
