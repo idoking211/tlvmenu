@@ -1,40 +1,45 @@
 const botconfig = require("./botconfig.json");
 const color = require("./color.json");
 const Discord = require("discord.js");
+const Fortnite = require("fortnite");
+const fortnite1 = new Fortnite("7e6f8fae-d645-41cd-940f-47447c537230");
+
+
 
 const bot = new Discord.Client({disableEveryone: true});
 
-const swearWords = ["fuck", "shit", "זונה", "חרא"];
+
 
 bot.on("ready", async () => {
   console.log(`Bot is Online!`);
-bot.user.setActivity(`${bot.guilds.size} servers | /tlv help`, {type: "WATCHING"});
+bot.user.setActivity(`Faded | /help`, {type: "WATCHING"});
 });
 
 // Updates the bot's status if he joins a server
 bot.on("guildCreate", guild => {
-bot.user.setActivity(`${bot.guilds.size} servers | /tlv help`, {type: "WATCHING"});
+bot.user.setActivity(`Faded | /help`, {type: "WATCHING"});
 });
 
 /// Updates the bot's status if he leaves a servers
 bot.on("guildDelete", guild => {
-bot.user.setActivity(
-        `${bot.guilds.size} servers | /tlv help`, {type: "WATCHING"});
+bot.user.setActivity(`Faded | /help`, {type: "WATCHING"});
 });
 
 //welcome join
 bot.on('guildMemberAdd', member => {
-  const channel = member.guild.channels.find('name', 'suchpro‼');
+  const channel = member.guild.channels.find('name', '👋welcome👋');
   if (!channel) return;
-  channel.send(`Welcome to the server, ${member}`);
+  channel.send(`ברוך הבא לשרת של Faded! ${server}, ${member}`);
 });
 
 //welcome left
 bot.on('guildMemberRemove', member => {
-  const channel = member.guild.channels.find('name', 'suchpro‼');
+  const channel = member.guild.channels.find('name', '👋welcome👋');
   if (!channel) return;
-  channel.send(`${member}, left the Server`);
+  channel.send(`${member}, יצא מהשרת של Faded`);
 });
+
+      
 
 bot.on("message", async message => {
   if(message.author.bot) return;
@@ -45,66 +50,99 @@ bot.on("message", async message => {
   let cmd = messageArray[0];
   let args = messageArray.slice(1);
 
-  if(cmd === `${prefix}kick`){
 
-    //!kick @user break the rules
-    let kUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-    if(!kUser) return message.channel.send("/tlv kick [user] [reason]");
-    let kReason = args.join(" ").slice(22);
-    if(!message.member.hasPermission("MANAGE_MESSAGES")) return message.channel.send("No can do pal!");
-    if(kUser.hasPermission("MANAGE_MESSAGES")) return message.channel.send("That person can't be kicked!");
+if(cmd === `${prefix}say`){
 
-    let kickEmbed = new Discord.RichEmbed()
-    .setDescription("**Kick**")
-    .setColor("#d83c3c")
-    .addField("User", `${kUser}`)
-    .addField("Staff", `<@${message.author.id}>`)
-    .addField("Reason", kReason);
-
-    let kickChannel = message.guild.channels.find(`name`, "logs");
-    if(!kickChannel) return message.channel.send("Can't find channel called `logs`");
-
-    message.guild.member(kUser).kick(kReason);
-    kickChannel.send(kickEmbed);
-
-    return;
-  }
-
-if( swearWords.some(word => message.content.includes(word)) ) {
-     message.delete();
-  message.reply("Swearing is not Allowed here");
-  //Or just do message.delete();
+  message.delete();
+  if(!message.member.hasPermission("MANAGE_MESSAGES")) return errors.noPerms(message, "MANAGE_MESSAGES");
+  let botmessage = args.join(" ");
+  message.channel.send(botmessage);
 }
 
-  if(cmd === `${prefix}ban`){
+if(cmd === `${prefix}pay`){
 
-    let bUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-    if(!bUser) return message.channel.send("/tlv ban [user] [reason]");
-    let bReason = args.join(" ").slice(22);
-    if(!message.member.hasPermission("MANAGE_MEMBERS")) return message.channel.send("No can do pal!");
-    if(bUser.hasPermission("MANAGE_MESSAGES")) return message.channel.send("That person can't be kicked!");
+if(!coins[message.author.id]){
+  return message.reply("You don't have any coins!")
+}
 
-    let banEmbed = new Discord.RichEmbed()
-    .setDescription("**Ban**")
-    .setColor("#bc0000")
-    .addField("**User**", `${bUser}`)
-    .addField("**Staff**", `<@${message.author.id}>`)
-    .addField("Reason", bReason);
+let pUser = message.guild.member(message.mentions.users.first()) || message.guild.members.get(args[0]);
 
-    let incidentchannel = message.guild.channels.find(`name`, "logs");
-    if(!incidentchannel) return message.channel.send("Can't find channel called `logs`");
+if(!coins[pUser.id]){
+  coins[pUser.id] = {
+    coins: 0
+  };
+}
 
-    message.guild.member(bUser).ban(bReason);
-    incidentchannel.send(banEmbed);
+let pCoins = coins[pUser.id].coins;
+let sCoins = coins[message.author.id].coins;
 
-    return;
-  }
+if(sCoins < args[0]) return message.reply("Not enough coins there!");
+
+coins[message.author.id] = {
+  coins: sCoins - parseInt(args[1])
+};
+
+coins[pUser.id] = {
+  coins: pCoins + parseInt(args[1])
+};
+
+message.channel.send(`${message.author} has given ${pUser} ${args[1]} coins.`);
+
+fs.writeFile("./coins.json", JSON.stringify(coins), (err) => {
+  if(err) cosole.log(err)
+});
+
+
+}
+if(cmd === `${prefix}coins`){
+
+if(!coins[message.author.id]){
+  coins[message.author.id] = {
+    coins: 0
+  };
+}
+
+let uCoins = coins[message.author.id].coins;
+
+
+let coinEmbed = new Discord.RichEmbed()
+.setAuthor(message.author.username)
+.setColor("#00FF00")
+.addField("💸", uCoins);
+
+message.channel.send(coinEmbed).then(msg => {msg.delete(5000)});
+
+}
+if(cmd === `${prefix}level`){
+
+if(!xp[message.author.id]){
+  xp[message.author.id] = {
+    xp: 0,
+    level: 1
+ };
+}
+ let curxp = xp[message.author.id].xp;
+ let curlvl = xp[message.author.id].level;
+ let nxtLvlXp = curlvl * 300;
+ let difference = nxtLvlXp - curxp;
+
+ let lvlEmbed = new Discord.RichEmbed()
+ .setAuthor(message.author.username)
+ .setColor(purple)
+ .addField("Level", curlvl, true)
+ .addField("XP", curxp, true)
+ .setFooter(`${difference} XP til level up`, message.author.displayAvatarURL);
+
+ message.channel.send(lvlEmbed).then(msg => {msg.delete(5000)});
+
+}
+
 
   if(cmd === `${prefix}report`){
 
     //!report @user this is the reason
     let rUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-    if(!rUser) return message.channel.send("/tlv report [user] [reason]");
+    if(!rUser) return message.channel.send("/report [user] [reason]");
     let rreason = args.join(" ").slice(22);
 
     let reportEmbed = new Discord.RichEmbed()
@@ -127,7 +165,7 @@ if( swearWords.some(word => message.content.includes(word)) ) {
 
     //!warn @user this is the reason
     let rUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-    if(!rUser) return message.channel.send("/tlv warn [user] [reason]");
+    if(!rUser) return message.channel.send("/warn [user] [reason]");
     let rreason = args.join(" ").slice(22);
 
     let reportEmbed = new Discord.RichEmbed()
@@ -146,14 +184,84 @@ if( swearWords.some(word => message.content.includes(word)) ) {
     return;
   }
 
+  if(cmd === `${prefix}yt`){
 
+    message.reply("SheepGamers | https://www.youtube.com/channel/UCgDszuAQuRv0QuwYbnGbWbw")
+  }
+
+  if(cmd === `${prefix}serverinfo`){
+
+    let sicon = message.guild.iconURL;
+    let serverembed = new Discord.RichEmbed()
+    .setDescription("Server Information")
+    .setColor("#15f153")
+    .setThumbnail(sicon)
+    .addField("Server Name", message.guild.name)
+    .addField("Created On", message.guild.createdAt)
+    .addField("You Joined", message.member.joinedAt)
+    .addField("Total Members", message.guild.memberCount);
+
+    return message.channel.send(serverembed);
+  }
+
+  if(cmd === `${prefix}fts`){
+  const provideusername = new Discord.RichEmbed()
+  .addField(`Fortnite Tracker Lifetime Stats - Season 5`, "Error! Please provide a username.")
+  .setColor("#36393F")
+
+  let username = args[0];
+  let platform = args[1] || 'pc';
+
+  if(!username) return message.channel.send(provideusername)
+
+  let data = fortnite.user(username, platform).then(data => {
+      console.log(data);
+      let stats = data.stats;
+      let lifetime = stats.lifetime;
+      console.log(lifetime);
+
+      let score = lifetime[6]['Score'];
+      let mplayed = lifetime[7]['Matches Played'];
+      let wins = lifetime[8]['Wins'];
+      let winper = lifetime[9]['Win%'];
+      let kills = lifetime[10]['Kills'];
+      let kd = lifetime[11]['K/d'];
+
+      let embed = new Discord.RichEmbed()
+      .setTitle("Fortnite Tracker Lifetime Stats")
+      .setAuthor(data.username)
+      .setColor("#36393F")
+      .addField("Wins", wins, true)
+      .addField("Kills", kills, true)
+      .addField("Score", score, true)
+      .addField("Matches Played", mplayed, true)
+      .addField("Win Percentage", winper, true)
+      .addField("Kill/Death Ratio", kd, true)
+
+      message.channel.send(embed);
+  });
+}
+
+
+
+  if(cmd === `${prefix}membercount`){
+
+    let sicon = message.guild.iconURL;
+    let serverembed = new Discord.RichEmbed()
+    .setDescription("**Member Count**")
+    .setColor("#eb8f1b")
+    .setThumbnail(sicon)
+    .addField("Members", message.guild.memberCount);
+
+    return message.channel.send(serverembed);
+  }
 
   if (cmd === `${prefix}poll`){
  		message.delete()
   let question = args.slice(0).join(" ");
 
   if (args.length === 0)
-  return message.reply('Invalid Format: /tlv poll <Question>')
+  return message.reply('Invalid Format: <poll <Question>')
 
   const embed = new Discord.RichEmbed()
   .setTitle("A Poll Has Been Started!")
@@ -170,6 +278,16 @@ if( swearWords.some(word => message.content.includes(word)) ) {
 }
 
 
+    if(cmd === `${prefix}clear`){
+
+  if(!message.member.hasPermission("MANAGE_MESSAGES")) return message.channel.send("You dont have the Permission `MANAGE_MESSAGES`");
+  if(!args[0]) return message.channel.send("<clear [amount of messages]");
+  message.channel.bulkDelete(args[0]).then(() => {
+    message.channel.send(`:white_check_mark: Cleared ${args[0]} messages.`).then(msg => msg.delete(5000));
+  });
+}
+  
+  
   if (cmd === `${prefix}creator`){
     let botembed = new Discord.RichEmbed()
     .setDescription("Creators of the Bot")
@@ -180,96 +298,71 @@ if( swearWords.some(word => message.content.includes(word)) ) {
 }
 
   if(cmd === `${prefix}help`){
-
     let bicon = bot.user.displayAvatarURL;
     let botembed = new Discord.RichEmbed()
     .setDescription("Help Commands")
     .setColor("#268ccf")
     .setThumbnail(bicon)
-    .addField("Moderation Commands","/tlv kick (user) (reason) - Kick a User.\n/tlv ban (user) (reason) - Ban a User.\n/tlv report (user) (reason) - report about User.\n/tlv mute (user) (reason) - Mute a User.\n/tlv warn (user) (reason) - Warn a User.")
-    .addField("Server Commands","/tlv serverinfo - Server Informations.n\/tlv poll (question) - Poll about Question\n/tlv ping - Ping Pong");
+    .addField("Moderation Commands","/clear - clear the chat\n/mute (user) - mute member\n/unmute (user) - unmute user.\n/report (user) (reason) - report about User.\n/warn (user) (reason) - Warn a User.")
+   .addField("Server Commands","/serverinfo - Server Informations.\n/poll (question) - Poll about Question\n/ping - Ping Pong")
+  .addField("Fortnite","/fts (name in fortntie) - show your stats in fortnite")
+   .addField("Economy","/coins - show your coins.\n/level - show your level.")
+   .addField("Creators","/creator - Bot Creators.");
     return message.author.send(botembed);
   }
-  if(cmd === `${prefix}mute`){
 
-   if (!message.member.hasPermission('MANAGE_MESSAGES')) return errors.noPermissions(message, 'MANAGE_MESSAGES');
-
-  let user = message.guild.member(message.mentions.members.first());
-  if (!user) return errors.invalidUser(message);
-  if (user.hasPermission('MANAGE_MESSAGES')) return errors.cannotPunish(message);
-
-  let reason = args.slice(1).join(" ");
-  if (!reason) return errors.invalidReason(message);
-
-  let muterole = message.guild.roles.find('name', 'Muted');
-  if (!muterole) {
-    try {
+if (cmd === `${prefix}mute`){
+  let tomute = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
+  if(!tomute) return message.reply("Couldn't find user.");
+  if(tomute.hasPermission("MANAGE_MESSAGES")) return message.reply("Can't mute them!");
+  let muterole = message.guild.roles.find(`name`, "muted");
+  //start of create role
+  if(!muterole){
+    try{
       muterole = await message.guild.createRole({
-        name: 'Muted',
+        name: "Muted",
         color: "#000000",
         permissions:[]
       })
       message.guild.channels.forEach(async (channel, id) => {
         await channel.overwritePermissions(muterole, {
           SEND_MESSAGES: false,
-          ADD_REACTIONS: false,
-          SPEAK: false
+          ADD_REACTIONS: false
         });
       });
-    } catch(e) {
+    }catch(e){
       console.log(e.stack);
     }
-  };
+  }
+  //end of create role
+  let mutetime = args[1];
+  if(!mutetime) return message.reply("You didn't specify a time!");
 
-  let time = args[1];
-  if (!time) return errors.invalidTime(message);
+  await(tomute.addRole(muterole.id));
+  message.reply(`<@${tomute.id}> has been muted for ${ms(ms(mutetime))}`);
 
-  let embed = new Discord.RichEmbed()
-  .setTitle('User has been Temporarily Muted')
-  .setColor("#FF0000")
-  .addField('User', `${user}`, true)
-  .addField('Staff', `${message.author}`, true)
-  .addField('Time', time)
-  .addField('Reason', reason);
-
-  let auditlogchannel = message.guild.channels.find('name', 'logs');
-  if (!auditlogchannel) return errors.noLogChannel(message);
-
-  message.delete().catch(O_o=>{});
-  auditlogchannel.send(embed)
-
-  await(user.addRole(muterole.id));
-  };
-});
-
-const prefix = botconfig.prefix;
-bot.on("message", (message) => {
-
-  if(!message.content.startsWith(prefix)) return;
-
-if(message.content.startsWith(prefix + "avatar ")) { //IF for the command.
-     if(message.mentions.users.first()) { //Check if the message has a mention in it.
-           let user = message.mentions.users.first(); //Since message.mentions.users returns a collection; we must use the first() method to get the first in the collection.
-           let output = user.tag /*Nickname and Discriminator*/ +
-           "\nAvatar URL: " + user.avatarURL; /*The Avatar URL*/
-           message.channel.sendMessage(output); //We send the output in the current channel.
-    } else {
-          message.reply("Invalid user."); //Reply with a mention saying "Invalid user."
-    }
- }});
+  setTimeout(function(){
+    tomute.removeRole(muterole.id);
+    message.channel.send(`<@${tomute.id}> has been unmuted!`);
+  }, ms(mutetime));
+}
+})
 
 bot.on('message', msg => {
-  if (msg.content === '/tlv ping') {
+  if (msg.content === '/ping') {
     msg.reply(`Pong! The ping is **${(bot.ping).toFixed(0)}**ms!  :ping_pong:`)
   }
 });
 
 bot.on('message', msg => {
-  if (msg.content === '/tlv help') {
-    msg.reply(`Check your Direct Messages!`)
+  if (msg.content === '/help') {
+    msg.reply(`Look Direct Messages Ya Shnitzel`)
   }
 });
-
-
+bot.on('message', msg => {
+  if (msg.content === '/avatar') {
+    msg.reply(`You need Mention someone`)
+  }
+  });
 
 bot.login(process.env.BOT_TOKEN);
